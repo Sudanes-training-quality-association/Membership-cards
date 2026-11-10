@@ -25,7 +25,11 @@ const logoImg = new Image();
 const wmImg = new Image();
 const wmReady = new Promise(r => { wmImg.onload = r; wmImg.onerror = r; wmImg.src = window.WM_DATA || 'assets/watermark.png'; });
 const logoReady0 = new Promise(r => { logoImg.onload = r; logoImg.onerror = r; logoImg.src = window.LOGO_DATA || 'assets/association-logo.png'; });
-const logoReady = Promise.all([logoReady0, wmReady]);
+const sigImg = new Image();
+const stampImg = new Image();
+const sigReady = new Promise(r => { sigImg.onload = r; sigImg.onerror = r; sigImg.src = window.SIG_DATA || 'assets/signature.png'; });
+const stampReady = new Promise(r => { stampImg.onload = r; stampImg.onerror = r; stampImg.src = window.STAMP_DATA || 'assets/stamp.png'; });
+const logoReady = Promise.all([logoReady0, wmReady, sigReady, stampReady]);
 
 /* ---------- drawing helpers ---------- */
 function rr(ctx, x, y, w, h, r) {
@@ -123,13 +127,13 @@ function render(cv, opts = {}) {
   ctx.save(); rr(ctx, 1.5, 1.5, U - 3, U - 3, 41); ctx.strokeStyle = 'rgba(47,107,54,.35)'; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
 
   // --- header: logo (left) + names ---
-  if (logoImg.naturalWidth) ctx.drawImage(logoImg, 44, 38, 150, 150);
-  text(ctx, 'الجمعية السودانية لجودة التدريب', 700, 78, 46, { maxW: 480 });
-  text(ctx, 'SUDANESE TRAINING QUALITY ASSOCIATION', 700, 132, 25, { dir: 'ltr', align: 'right', maxW: 480 });
+  if (logoImg.naturalWidth) ctx.drawImage(logoImg, 32, 29, 172, 172);
+  text(ctx, 'الجمعية السودانية لجودة التدريب', 700, 74, 46, { maxW: 480 });
+  text(ctx, 'SUDANESE TRAINING QUALITY ASSOCIATION', 700, 128, 25, { dir: 'ltr', align: 'right', maxW: 480 });
 
   // --- title ---
-  text(ctx, 'بطاقة عضوية', 560, 232, 64);
-  text(ctx, 'MEMBERSHIP CARD', 560, 292, 32, { dir: 'ltr' });
+  text(ctx, 'بطاقة عضوية', 655, 212, 64);
+  text(ctx, 'MEMBERSHIP CARD', 655, 272, 32, { dir: 'ltr' });
 
   // --- photo (upper right) ---
   const px = 740, py = 38, pw = 220, ph = 275;
@@ -153,8 +157,6 @@ function render(cv, opts = {}) {
   ctx.restore();
   rr(ctx, px, py, pw, ph, 18); ctx.strokeStyle = C.greenDark; ctx.lineWidth = 3; ctx.stroke();
   ctx.restore();
-  text(ctx, 'صورة العضو', px + pw / 2, 345, 30, { align: 'center' });
-  text(ctx, 'MEMBER PHOTO', px + pw / 2, 378, 21, { align: 'center', dir: 'ltr' });
 
   // --- fields: labels on the RIGHT, boxes extend to the LEFT ---
   const v = Object.fromEntries(ids.map(i => [i, (form[i].value || '').trim()]));
@@ -164,11 +166,11 @@ function render(cv, opts = {}) {
     ['اسم العضو:', 'MEMBER NAME:', v.memberName, 690],
     ['التخصص:', 'SPECIALIZATION:', v.specialization, 690],
     ['تاريخ الصلاحية:', 'VALIDITY DATE:', fmtDate(v.validityDate), 440, true],
-    ['تاريخ الإصدار:', 'ISSUE DATE:', fmtDate(v.issueDate), 440]
+    ['التاريخ (الإصدار):', 'DATE (ISSUE):', fmtDate(v.issueDate), 440]
   ];
   const labelRight = 960, boxRight = 722, boxLeft = 44, bh = 76;
   rows.forEach(([ar, en, val, boxW, cal], i) => {
-    const y = 412 + i * 96, cy = y + bh / 2;
+    const y = 337 + i * 96, cy = y + bh / 2;
     text(ctx, ar, labelRight, cy - 16, 34);
     text(ctx, en, labelRight, cy + 21, 22, { dir: 'ltr' });
     const bw = boxW === 690 ? boxRight - boxLeft : boxW, bx = boxRight - bw;
@@ -183,6 +185,8 @@ function render(cv, opts = {}) {
   // --- signature & stamp ---
   ctx.save(); ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
   ctx.beginPath(); ctx.moveTo(60, 905); ctx.lineTo(430, 905); ctx.moveTo(600, 905); ctx.lineTo(900, 905); ctx.stroke(); ctx.restore();
+  if (sigImg.naturalWidth) ctx.drawImage(sigImg, 150, 812, 130, 130 * sigImg.naturalHeight / sigImg.naturalWidth);
+  if (stampImg.naturalWidth) ctx.drawImage(stampImg, 690, 809, 86, 86);
   text(ctx, 'التوقيع المخول', 245, 930, 28, { align: 'center' });
   text(ctx, 'AUTHORIZED SIGNATURE', 245, 962, 21, { align: 'center', dir: 'ltr' });
   text(ctx, 'الختم الرسمي', 750, 930, 28, { align: 'center' });

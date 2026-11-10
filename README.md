@@ -26,4 +26,10 @@ python3 -m http.server 8000
 يُحمَّل خط Cairo من Google Fonts ويُخزَّن تلقائياً للعمل دون اتصال. لاستقلال كامل، نزّل الخط إلى `assets/fonts/` وأضف `@font-face` في style.css.
 
 ## الملفات
-index.html · style.css · script.js · manifest.json · service-worker.js · assets/ (الشعار والأيقونات و logo-data.js)
+index.html · style.css · script.js · manifest.json · service-worker.js · assets/ (الشعار association-logo.png، التوقيع signature.png، الختم stamp.png، الأيقونات، وملفات *-data.js)
+
+## تعديلات الإصدار 03
+- الشعار الجديد (بجودة 1200px) في الترويسة والأيقونات.
+- إضافة التوقيع والختم الرسمي فوق الخطوط المنقطة.
+- حذف عبارتي «صورة العضو / MEMBER PHOTO» تحت الصورة، ورفع الحقول لاستغلال المساحة.
+- تسمية «التاريخ (الإصدار) / DATE (ISSUE)».
