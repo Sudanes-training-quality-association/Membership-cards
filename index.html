@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نظام إصدار بطاقات العضوية | الجمعية السودانية لجودة التدريب</title>
+<meta name="theme-color" content="#1a4dff">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/application-icon-192.png">
+<link rel="apple-touch-icon" href="assets/application-icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <img src="assets/association-logo.png" alt="شعار الجمعية السودانية لجودة التدريب" class="brand-logo">
+    <div class="brand-text">
+      <h1>الجمعية السودانية لجودة التدريب</h1>
+      <p class="en">SUDANESE TRAINING QUALITY ASSOCIATION</p>
+    </div>
+  </div>
+  <div class="app-title">
+    <span>نظام إصدار بطاقات العضوية</span>
+    <button type="button" id="installBtn" class="btn btn-light" hidden>تثبيت التطبيق</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <!-- Form (right side in RTL) -->
+  <section class="panel form-panel" aria-labelledby="formTitle">
+    <h2 id="formTitle">بيانات العضو</h2>
+    <form id="cardForm" novalidate autocomplete="off">
+      <div class="field">
+        <label for="memberNo">رقم العضوية <small>Membership No.</small></label>
+        <div class="control"><input type="text" id="memberNo" name="memberNo" required inputmode="text" placeholder="مثال: STQA-0001">
+        <span class="error" data-for="memberNo"></span></div>
+      </div>
+      <div class="field">
+        <label for="memberName">اسم العضو <small>Member Name</small></label>
+        <div class="control"><input type="text" id="memberName" name="memberName" required placeholder="الاسم الكامل">
+        <span class="error" data-for="memberName"></span></div>
+      </div>
+      <div class="field">
+        <label for="specialization">التخصص <small>Specialization</small></label>
+        <div class="control"><input type="text" id="specialization" name="specialization" required placeholder="مثال: إدارة الجودة">
+        <span class="error" data-for="specialization"></span></div>
+      </div>
+      <div class="field">
+        <label for="validityDate">تاريخ الصلاحية <small>Validity Date</small></label>
+        <div class="control"><input type="date" id="validityDate" name="validityDate" required>
+        <span class="error" data-for="validityDate"></span></div>
+      </div>
+      <div class="field">
+        <label for="issueDate">تاريخ الإصدار <small>Issue Date</small></label>
+        <div class="control"><input type="date" id="issueDate" name="issueDate" required>
+        <span class="error" data-for="issueDate"></span></div>
+      </div>
+      <div class="field">
+        <label for="photoInput">صورة العضو <small>Member Photo</small></label>
+        <div class="control photo-control">
+          <div class="photo-thumb" id="photoThumb" aria-hidden="true"><span>لا توجد صورة</span></div>
+          <div class="photo-actions">
+            <input type="file" id="photoInput" accept="image/*" hidden>
+            <button type="button" class="btn btn-primary" id="photoPick">رفع صورة</button>
+            <button type="button" class="btn btn-ghost" id="photoRemove" hidden>إزالة الصورة</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="resetBtn">إعادة تعيين النموذج</button>
+        <button type="button" class="btn btn-danger" id="clearBtn">مسح جميع البيانات</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Preview (left side in RTL) -->
+  <section class="panel preview-panel" aria-labelledby="previewTitle">
+    <h2 id="previewTitle">معاينة البطاقة</h2>
+    <div class="card-stage">
+      <canvas id="cardCanvas" width="1063" height="1063" role="img" aria-label="معاينة بطاقة العضوية"></canvas>
+    </div>
+    <p class="hint">المقاس الفعلي للطباعة: ٩٠ × ٩٠ مم — دقة ٣٠٠ DPI (١٠٦٣ × ١٠٦٣ بكسل)</p>
+
+    <h3>تحميل البطاقة</h3>
+    <div class="download-grid">
+      <button type="button" class="btn btn-primary" data-export="pdf">تحميل PDF</button>
+      <button type="button" class="btn btn-primary" data-export="png">تحميل PNG</button>
+      <button type="button" class="btn btn-primary" data-export="jpg">تحميل JPG</button>
+      <button type="button" class="btn btn-primary" data-export="webp">تحميل WEBP</button>
+    </div>
+    <div class="download-grid two">
+      <button type="button" class="btn btn-green" id="previewPrintBtn">معاينة الطباعة</button>
+      <button type="button" class="btn btn-orange" id="printBtn">طباعة مباشرة</button>
+    </div>
+  </section>
+</main>
+
+<footer class="app-footer">© الجمعية السودانية لجودة التدريب — Sudanese Training Quality Association</footer>
+
+<!-- Print preview modal -->
+<div class="modal" id="printModal" hidden>
+  <div class="modal-box">
+    <h3>معاينة الطباعة (٩٠ × ٩٠ مم)</h3>
+    <div class="print-sheet"><img id="printImg" alt="البطاقة للطباعة"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-orange" id="modalPrint">طباعة</button>
+      <button type="button" class="btn btn-ghost" id="modalClose">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="loader" id="loader" hidden><div class="spinner"></div><p>جارٍ إنشاء الملف…</p></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="assets/logo-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

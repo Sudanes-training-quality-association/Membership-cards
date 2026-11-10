@@ -1,0 +1,17 @@
+{
+  "name": "نظام إصدار بطاقات العضوية — الجمعية السودانية لجودة التدريب",
+  "short_name": "بطاقات العضوية",
+  "description": "إصدار بطاقات عضوية الجمعية السودانية لجودة التدريب وتصديرها بدقة طباعة عالية",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a4dff",
+  "icons": [
+    { "src": "assets/application-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/application-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/application-icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
