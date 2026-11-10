@@ -4,8 +4,9 @@
 (() => {
 'use strict';
 
-const PRINT_MM = 90, DPI = 300;
-const PX = Math.round(PRINT_MM / 25.4 * DPI);          // 1063
+const PRINT_MM = 90, DPI = 600;                          // export density (physical size stays 90 mm)
+const PX = Math.round(PRINT_MM / 25.4 * 300);           // 1063 px preview
+const EXPORT_PX = Math.round(PRINT_MM / 25.4 * DPI);    // 2126 px export
 const U = 1000;                                          // design units
 const FONT = "Cairo, Tajawal, 'Segoe UI', Tahoma, Arial, sans-serif";
 const C = { blue:'#1a4dff', green:'#1fae2a', greenDark:'#2f6b36', orange:'#f98717', ink:'#0d0d0d' };
@@ -94,8 +95,10 @@ function render(cv, opts = {}) {
   const forExport = !!opts.export;
   const bg = opts.background;                 // CSS colour behind rounded corners, or undefined = transparent
   const ctx = cv.getContext('2d');
-  cv.width = cv.height = PX;
-  const k = PX / U;
+  const N = opts.px || PX;
+  cv.width = cv.height = N;
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  const k = N / U;
   ctx.setTransform(k, 0, 0, k, 0, 0);
   ctx.clearRect(0, 0, U, U);
   if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, U, U); }
@@ -317,7 +320,7 @@ function makePdf(jpeg) {                          // single-page PDF, page = exa
   obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
   obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
   obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pt} ${pt}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
-  obj(4, `<< /Type /XObject /Subtype /Image /Width ${PX} /Height ${PX} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>`, jpeg);
+  obj(4, `<< /Type /XObject /Subtype /Image /Width ${EXPORT_PX} /Height ${EXPORT_PX} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>`, jpeg);
   obj(5, `<< /Length ${content.length} >>`, bytes(content));
   const xref = len;
   let x = 'xref\n0 6\n0000000000 65535 f \n';
@@ -343,8 +346,9 @@ async function exportAs(fmt) {
     await new Promise(r => setTimeout(r, 60));
     const cv = document.createElement('canvas');
     const solid = fmt === 'jpg' || fmt === 'pdf';
-    render(cv, { export: true, background: solid ? '#ffffff' : undefined });
-    const base = 'membership-card-' + (PREFIX + form.memberNo.value.trim().replace(/[^\w\u0600-\u06FF-]+/g, '_') || 'card');
+    render(cv, { export: true, px: EXPORT_PX, background: solid ? '#ffffff' : undefined });
+    const clean = t => t.trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_');
+    const base = [clean(form.memberName.value), PREFIX + clean(form.memberNo.value)].filter(Boolean).join('_');
     let blob;
     if (fmt === 'png') blob = new Blob([pngWithDpi(new Uint8Array(await (await toBlob(cv, 'image/png')).arrayBuffer()))], { type: 'image/png' });
     else if (fmt === 'jpg') blob = new Blob([jpegWithDpi(new Uint8Array(await (await toBlob(cv, 'image/jpeg', .96)).arrayBuffer()))], { type: 'image/jpeg' });
@@ -363,7 +367,7 @@ async function exportAs(fmt) {
 async function showPrint(thenPrint) {
   if (!await prepare()) return;
   const cv = document.createElement('canvas');
-  render(cv, { export: true, background: '#ffffff' });
+  render(cv, { export: true, px: EXPORT_PX, background: '#ffffff' });
   $('#printImg').src = cv.toDataURL('image/png');
   $('#printModal').hidden = false;
   if (thenPrint) setTimeout(() => window.print(), 250);
