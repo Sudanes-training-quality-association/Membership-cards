@@ -10,6 +10,7 @@ const U = 1000;                                          // design units
 const FONT = "Cairo, Tajawal, 'Segoe UI', Tahoma, Arial, sans-serif";
 const C = { blue:'#1a4dff', green:'#1fae2a', greenDark:'#2f6b36', orange:'#f98717', ink:'#0d0d0d' };
 const STORE = 'stqa-card-v1';
+const PREFIX = 'STQA-';
 
 const $ = s => document.querySelector(s);
 const canvas = $('#cardCanvas');
@@ -109,7 +110,7 @@ function render(cv, opts = {}) {
 
   // watermark (behind fields)
   if (wmImg.naturalWidth) {
-    ctx.globalAlpha = .17;
+    ctx.globalAlpha = .32;
     ctx.drawImage(wmImg, 190, 215, 620, 620);
     ctx.globalAlpha = 1;
   }
@@ -154,6 +155,7 @@ function render(cv, opts = {}) {
 
   // --- fields: labels on the RIGHT, boxes extend to the LEFT ---
   const v = Object.fromEntries(ids.map(i => [i, (form[i].value || '').trim()]));
+  if (v.memberNo) v.memberNo = PREFIX + v.memberNo;
   const rows = [
     ['رقم العضوية:', 'MEMBERSHIP NO:', v.memberNo, 690],
     ['اسم العضو:', 'MEMBER NAME:', v.memberName, 690],
@@ -342,7 +344,7 @@ async function exportAs(fmt) {
     const cv = document.createElement('canvas');
     const solid = fmt === 'jpg' || fmt === 'pdf';
     render(cv, { export: true, background: solid ? '#ffffff' : undefined });
-    const base = 'membership-card-' + (form.memberNo.value.trim().replace(/[^\w\u0600-\u06FF-]+/g, '_') || 'card');
+    const base = 'membership-card-' + (PREFIX + form.memberNo.value.trim().replace(/[^\w\u0600-\u06FF-]+/g, '_') || 'card');
     let blob;
     if (fmt === 'png') blob = new Blob([pngWithDpi(new Uint8Array(await (await toBlob(cv, 'image/png')).arrayBuffer()))], { type: 'image/png' });
     else if (fmt === 'jpg') blob = new Blob([jpegWithDpi(new Uint8Array(await (await toBlob(cv, 'image/jpeg', .96)).arrayBuffer()))], { type: 'image/jpeg' });
@@ -369,6 +371,7 @@ async function showPrint(thenPrint) {
 
 /* ---------- events ---------- */
 form.addEventListener('input', e => {
+  if (e.target.id === 'memberNo') e.target.value = e.target.value.replace(/^\s*stqa\s*-?\s*/i, '');
   if (e.target.classList.contains('invalid')) { e.target.classList.remove('invalid'); document.querySelector(`.error[data-for="${e.target.id}"]`).textContent = ''; }
   refresh(); save();
 });

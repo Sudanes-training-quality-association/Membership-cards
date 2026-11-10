@@ -79,3 +79,9 @@ input.invalid{border-color:#d93025;background:#fff6f5}
   .print-sheet{padding:0;background:none}
   .print-sheet img{width:90mm!important;height:90mm!important;max-width:none}
 }
+
+.prefix-group{display:flex;align-items:stretch;border:1.5px solid var(--line);border-radius:10px;background:#fbfcfe;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.prefix-group:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,77,255,.15)}
+.prefix-group .prefix{display:flex;align-items:center;padding:0 12px;background:#e8eefc;color:var(--blue-dark);font-weight:800;letter-spacing:.5px;border-inline-end:1.5px solid var(--line)}
+.prefix-group input{border:0;border-radius:0;background:transparent;box-shadow:none!important;text-align:left}
+.prefix-group:has(input.invalid){border-color:#d93025;background:#fff6f5}
