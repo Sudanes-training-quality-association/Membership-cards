@@ -20,7 +20,10 @@ let photoData = '';                 // data URL (for session storage)
 
 /* ---------- assets ---------- */
 const logoImg = new Image();
-const logoReady = new Promise(r => { logoImg.onload = r; logoImg.onerror = r; logoImg.src = window.LOGO_DATA || 'assets/association-logo.png'; });
+const wmImg = new Image();
+const wmReady = new Promise(r => { wmImg.onload = r; wmImg.onerror = r; wmImg.src = window.WM_DATA || 'assets/watermark.png'; });
+const logoReady0 = new Promise(r => { logoImg.onload = r; logoImg.onerror = r; logoImg.src = window.LOGO_DATA || 'assets/association-logo.png'; });
+const logoReady = Promise.all([logoReady0, wmReady]);
 
 /* ---------- drawing helpers ---------- */
 function rr(ctx, x, y, w, h, r) {
@@ -105,9 +108,9 @@ function render(cv, opts = {}) {
   decorations(ctx);
 
   // watermark (behind fields)
-  if (logoImg.naturalWidth) {
-    ctx.globalAlpha = .10;
-    ctx.drawImage(logoImg, 240, 250, 520, 520);
+  if (wmImg.naturalWidth) {
+    ctx.globalAlpha = .17;
+    ctx.drawImage(wmImg, 190, 215, 620, 620);
     ctx.globalAlpha = 1;
   }
   ctx.restore();
