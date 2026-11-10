@@ -161,7 +161,7 @@ function render(cv, opts = {}) {
     ['اسم العضو:', 'MEMBER NAME:', v.memberName, 690],
     ['التخصص:', 'SPECIALIZATION:', v.specialization, 690],
     ['تاريخ الصلاحية:', 'VALIDITY DATE:', fmtDate(v.validityDate), 440, true],
-    ['التاريخ (الإصدار):', 'DATE (ISSUE):', fmtDate(v.issueDate), 440]
+    ['تاريخ الإصدار:', 'ISSUE DATE:', fmtDate(v.issueDate), 440]
   ];
   const labelRight = 960, boxRight = 722, boxLeft = 44, bh = 76;
   rows.forEach(([ar, en, val, boxW, cal], i) => {
