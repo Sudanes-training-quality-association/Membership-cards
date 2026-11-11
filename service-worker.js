@@ -1,4 +1,4 @@
-const CACHE = 'stqa-cards-v3';
+const CACHE = 'stqa-cards-v4';
 const ASSETS = ['./','index.html','style.css','script.js','manifest.json',
   'assets/logo-data.js','assets/signature-data.js','assets/stamp-data.js','assets/signature.png','assets/stamp.png','assets/watermark-data.js','assets/watermark.png','assets/association-logo.png','assets/application-icon.png','assets/application-icon-192.png','assets/application-icon-maskable.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())); });

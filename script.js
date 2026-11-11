@@ -1,22 +1,22 @@
-/* Sudanese Training Quality Association — Membership Card Generator
+/* Sudanese Association for Training Quality — Membership Card Generator
    Pure vanilla JS. The card is drawn on a canvas (1000-unit design grid) so the
    preview and every export (PNG/JPG/WEBP/PDF/print) come from one renderer. */
 (() => {
 'use strict';
 
-const PRINT_MM = 90, DPI = 600;                          // export density (physical size stays 90 mm)
+const PRINT_MM = 90, DPI = 300;                          // export density (physical size stays 90 mm)
 const PX = Math.round(PRINT_MM / 25.4 * 300);           // 1063 px preview
-const EXPORT_PX = Math.round(PRINT_MM / 25.4 * DPI);    // 2126 px export
+const EXPORT_PX = Math.round(PRINT_MM / 25.4 * DPI);    // 1063 px export (300 DPI)
 const U = 1000;                                          // design units
 const FONT = "Cairo, Tajawal, 'Segoe UI', Tahoma, Arial, sans-serif";
-const C = { blue:'#1a4dff', green:'#1fae2a', greenDark:'#2f6b36', orange:'#f98717', ink:'#0d0d0d' };
+const C = { blue:'#1a4dff', navy:'#0b2a9c', navyText:'#0a1f66', green:'#1fae2a', greenDark:'#2f6b36', orange:'#f98717', ink:'#0d0d0d' };
 const STORE = 'stqa-card-v1';
 const PREFIX = 'STQA-';
 
 const $ = s => document.querySelector(s);
 const canvas = $('#cardCanvas');
 const form = $('#cardForm');
-const ids = ['memberNo','memberName','specialization','validityDate','issueDate'];
+const ids = ['memberNo','memberName','specialization','issueDate','validityDate'];
 const state = { photo: null };      // photo = HTMLImageElement
 let photoData = '';                 // data URL (for session storage)
 
@@ -43,14 +43,14 @@ function rr(ctx, x, y, w, h, r) {
 }
 function text(ctx, str, x, y, size, o = {}) {
   ctx.save();
-  ctx.font = `${o.weight || 700} ${size}px ${FONT}`;
+  ctx.font = `${o.weight || 800} ${size}px ${FONT}`;
   ctx.fillStyle = o.color || C.ink;
   ctx.textAlign = o.align || 'right';
   ctx.textBaseline = o.base || 'middle';
   ctx.direction = o.dir || 'rtl';
   if (o.maxW) {                       // shrink to fit
     let s = size;
-    while (ctx.measureText(str).width > o.maxW && s > 12) { s -= 1; ctx.font = `${o.weight || 700} ${s}px ${FONT}`; }
+    while (ctx.measureText(str).width > o.maxW && s > 12) { s -= 1; ctx.font = `${o.weight || 800} ${s}px ${FONT}`; }
   }
   ctx.fillText(str, x, y);
   ctx.restore();
@@ -129,7 +129,7 @@ function render(cv, opts = {}) {
   // --- header: logo (left) + names ---
   if (logoImg.naturalWidth) ctx.drawImage(logoImg, 32, 29, 172, 172);
   text(ctx, 'الجمعية السودانية لجودة التدريب', 700, 74, 46, { maxW: 480 });
-  text(ctx, 'SUDANESE TRAINING QUALITY ASSOCIATION', 700, 128, 25, { dir: 'ltr', align: 'right', maxW: 480 });
+  text(ctx, 'SUDANESE ASSOCIATION FOR TRAINING QUALITY', 700, 128, 25, { dir: 'ltr', align: 'right', maxW: 480 });
 
   // --- title ---
   text(ctx, 'بطاقة عضوية', 655, 212, 64);
@@ -165,32 +165,41 @@ function render(cv, opts = {}) {
     ['رقم العضوية:', 'MEMBERSHIP NO:', v.memberNo, 690],
     ['اسم العضو:', 'MEMBER NAME:', v.memberName, 690],
     ['التخصص:', 'SPECIALIZATION:', v.specialization, 690],
-    ['تاريخ الصلاحية:', 'VALIDITY DATE:', fmtDate(v.validityDate), 440, true],
-    ['التاريخ (الإصدار):', 'DATE (ISSUE):', fmtDate(v.issueDate), 440]
+    ['تاريخ الإصدار:', 'ISSUE DATE:', fmtDate(v.issueDate), 440, true],
+    ['تاريخ الصلاحية:', 'VALIDITY DATE:', fmtDate(v.validityDate), 440, true]
   ];
-  const labelRight = 960, boxRight = 722, boxLeft = 44, bh = 76;
+  const labelRight = 960, boxRight = 722, boxLeft = 44, bh = 76, tabLeft = 734;
   rows.forEach(([ar, en, val, boxW, cal], i) => {
     const y = 337 + i * 96, cy = y + bh / 2;
-    text(ctx, ar, labelRight, cy - 16, 34);
-    text(ctx, en, labelRight, cy + 21, 22, { dir: 'ltr' });
+    // blue label tab (white text)
+    const tw = labelRight - tabLeft;
+    ctx.save();
+    rr(ctx, tabLeft, y, tw, bh, 18);
+    const tg = ctx.createLinearGradient(tabLeft, 0, labelRight, 0);
+    tg.addColorStop(0, C.navy); tg.addColorStop(1, C.blue);
+    ctx.fillStyle = tg; ctx.fill();
+    ctx.restore();
+    text(ctx, ar, labelRight - 18, cy - 15, 33, { color: '#ffffff', maxW: tw - 36 });
+    text(ctx, en, labelRight - 18, cy + 21, 20, { color: '#ffffff', dir: 'ltr', maxW: tw - 36 });
+    // value box with blue outline
     const bw = boxW === 690 ? boxRight - boxLeft : boxW, bx = boxRight - bw;
     ctx.save();
     rr(ctx, bx, y, bw, bh, 18);
-    ctx.fillStyle = 'rgba(255,255,255,.62)'; ctx.fill();
-    ctx.strokeStyle = C.greenDark; ctx.lineWidth = 2.6; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fill();
+    ctx.strokeStyle = C.blue; ctx.lineWidth = 3.4; ctx.stroke();
     ctx.restore();
-    if (val) text(ctx, val, bx + bw - 22, cy + 2, 36, { maxW: bw - 60, weight: 700 });
+    if (val) text(ctx, val, bx + bw - 22, cy + 2, 37, { maxW: bw - 60, color: C.navyText });
     if (cal && !forExport && !val) drawCalendar(ctx, bx + 36, cy);
   });
   // --- signature & stamp ---
   ctx.save(); ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
-  ctx.beginPath(); ctx.moveTo(60, 905); ctx.lineTo(430, 905); ctx.moveTo(600, 905); ctx.lineTo(900, 905); ctx.stroke(); ctx.restore();
-  if (sigImg.naturalWidth) ctx.drawImage(sigImg, 150, 812, 130, 130 * sigImg.naturalHeight / sigImg.naturalWidth);
-  if (stampImg.naturalWidth) ctx.drawImage(stampImg, 690, 809, 86, 86);
-  text(ctx, 'التوقيع المخول', 245, 930, 28, { align: 'center' });
-  text(ctx, 'AUTHORIZED SIGNATURE', 245, 962, 21, { align: 'center', dir: 'ltr' });
-  text(ctx, 'الختم الرسمي', 750, 930, 28, { align: 'center' });
-  text(ctx, 'OFFICIAL STAMP', 750, 962, 21, { align: 'center', dir: 'ltr' });
+  ctx.beginPath(); ctx.moveTo(60, 914); ctx.lineTo(430, 914); ctx.moveTo(600, 914); ctx.lineTo(900, 914); ctx.stroke(); ctx.restore();
+  if (sigImg.naturalWidth) { const sw = 300, sh = sw * sigImg.naturalHeight / sigImg.naturalWidth; ctx.drawImage(sigImg, 245 - sw / 2, 902 - sh, sw, sh); }
+  if (stampImg.naturalWidth) ctx.drawImage(stampImg, 700, 808, 100, 100);
+  text(ctx, 'التوقيع المخول', 245, 940, 28, { align: 'center' });
+  text(ctx, 'AUTHORIZED SIGNATURE', 245, 970, 21, { align: 'center', dir: 'ltr' });
+  text(ctx, 'الختم الرسمي', 750, 940, 28, { align: 'center' });
+  text(ctx, 'OFFICIAL STAMP', 750, 970, 21, { align: 'center', dir: 'ltr' });
 }
 
 function drawCalendar(ctx, x, y) {

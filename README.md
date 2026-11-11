@@ -1,5 +1,5 @@
 # نظام إصدار بطاقات العضوية — Membership Card Generator
-الجمعية السودانية لجودة التدريب · Sudanese Training Quality Association
+الجمعية السودانية لجودة التدريب · Sudanese Association for Training Quality
 
 تطبيق ويب (PWA) بلغة HTML/CSS/JavaScript فقط، بدون خادم أو قاعدة بيانات.
 
@@ -28,8 +28,9 @@ python3 -m http.server 8000
 ## الملفات
 index.html · style.css · script.js · manifest.json · service-worker.js · assets/ (الشعار association-logo.png، التوقيع signature.png، الختم stamp.png، الأيقونات، وملفات *-data.js)
 
-## تعديلات الإصدار 03
-- الشعار الجديد (بجودة 1200px) في الترويسة والأيقونات.
-- إضافة التوقيع والختم الرسمي فوق الخطوط المنقطة.
-- حذف عبارتي «صورة العضو / MEMBER PHOTO» تحت الصورة، ورفع الحقول لاستغلال المساحة.
-- تسمية «التاريخ (الإصدار) / DATE (ISSUE)».
+## تعديلات الإصدار 04
+- ختم وتوقيع جديدان بصيغة PNG شفافة (assets/stamp.png و assets/signature.png).
+- ترتيب التواريخ: تاريخ الإصدار أولاً ثم تاريخ الصلاحية.
+- حقول زرقاء (لوحات العناوين بنص أبيض وإطارات القيم زرقاء) وخط أثقل.
+- تصحيح العناوين: «تاريخ الإصدار» و«تاريخ الصلاحية»، والاسم الإنجليزي SUDANESE ASSOCIATION FOR TRAINING QUALITY.
+- التصدير النهائي 1063 × 1063 بكسل بدقة 300 DPI.
